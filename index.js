@@ -7,18 +7,11 @@ const express = require('express');
 const app = express();
 
 // Express.js Port Config
-const ports = [4000, 3000, 5000, 8000];
-let availablePortIndex = 0;
+const app = express();
+const port = process.env.PORT || 3000;
+app.get("/", (req, res) => res.send("VOX-MD is alive!"));
+app.listen(port, () => console.log(`✅ Server running on port ${port}`));
 
-function checkPort(port) {
-  return new Promise((resolve, reject) => {
-    const server = app.listen(port, () => {
-      server.close();
-      resolve(true);
-    });
-    server.on('error', reject);
-  });
-}
 
 async function startServer() {
   const port = ports[availablePortIndex];
