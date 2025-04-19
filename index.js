@@ -25,20 +25,26 @@ async function startServer() {
   const isPortAvailable = await checkPort(port);
 
   if (isPortAvailable) {
-    console.log('\x1b[33m%s\x1b[0m', `🌐 Port ${port} is open`);
-    app.get('/', (req, res) => {
-      res.setHeader('Content-Type', 'application/json');
-      const data = {
+  if (isPortAvailable) {
+  console.log('\x1b[33m%s\x1b[0m', `🌐 Port ${port} is open`);
+  
+  app.get('/', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify({
+      response: {
         status: 'true',
         message: 'Bot Successfully Activated!',
         author: 'BETABOTZ'
-      };
-      const result = {
-        response: data
-      };
-      res.send(JSON.stringify(result, null, 2));
-    });
-  } else {
+      }
+    }, null, 2));
+  });
+
+  // Start server and keep it alive
+  app.listen(port, () => {
+    console.log(`🚀 Express server running on port ${port}`);
+  });
+  } 
+  else {
     console.log(`Port ${port} is already in use. Trying another port...`);
     availablePortIndex++;
 
