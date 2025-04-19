@@ -6,7 +6,7 @@ const os = require('os');
 const express = require('express');
 const app = express();
 
-// Express.js 
+// Express.js Port Config
 const ports = [4000, 3000, 5000, 8000];
 let availablePortIndex = 0;
 
@@ -22,30 +22,29 @@ function checkPort(port) {
 
 async function startServer() {
   const port = ports[availablePortIndex];
-  const isPortAvailable = await checkPort(port);
+  try {
+    const isPortAvailable = await checkPort(port);
 
-  if (isPortAvailable) {
-  if (isPortAvailable) {
-  console.log('\x1b[33m%s\x1b[0m', `🌐 Port ${port} is open`);
-  
-  app.get('/', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({
-      response: {
-        status: 'true',
-        message: 'Bot Successfully Activated!',
-        author: 'BETABOTZ'
-      }
-    }, null, 2));
-  });
+    if (isPortAvailable) {
+      console.log('\x1b[33m%s\x1b[0m', `🌐 Port ${port} is open`);
 
-  // Start server and keep it alive
-  app.listen(port, () => {
-    console.log(`🚀 Express server running on port ${port}`);
-  });
-  } 
-  else {
-    console.log(`Port ${port} is already in use. Trying another port...`);
+      app.get('/', (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({
+          response: {
+            status: 'true',
+            message: 'Bot Successfully Activated!',
+            author: 'BETABOTZ'
+          }
+        }, null, 2));
+      });
+
+      app.listen(port, () => {
+        console.log(`🚀 Express server running on port ${port}`);
+      });
+    }
+  } catch (err) {
+    console.log(`Port ${port} is already in use or unavailable. Trying another port...`);
     availablePortIndex++;
 
     if (availablePortIndex >= ports.length) {
@@ -58,6 +57,7 @@ async function startServer() {
   }
 }
 
+// Start Express server
 startServer();
 
 let isRunning = false;
@@ -94,7 +94,7 @@ function start(file) {
 
     fs.watchFile(args[0], () => {
       fs.unwatchFile(args[0]);
-	  console.error('\x1b[31m%s\x1b[0m', `File ${args[0]} has been modified. Script will restart...`);
+      console.error('\x1b[31m%s\x1b[0m', `File ${args[0]} has been modified. Script will restart...`);
       start("main.js");
     });
   });
@@ -130,23 +130,27 @@ function start(file) {
   console.log(`💽 \x1b[33mFree RAM: ${freeRamInGB.toFixed(2)} GB\x1b[0m`);
   console.log('\x1b[33m%s\x1b[0m', `📃 Script by BETABOTZ`);
 
-  setInterval(() => {}, 1000);
+  setInterval(() => {}, 1000); // Keeps process alive
 }
 
+// Start main bot logic
 start("main.js");
 
+// Create tmp directory if missing
 const tmpDir = './tmp';
-  if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir);
-    console.log('\x1b[33m%s\x1b[0m', `📁 Created directory ${tmpDir}`);
+if (!fs.existsSync(tmpDir)) {
+  fs.mkdirSync(tmpDir);
+  console.log('\x1b[33m%s\x1b[0m', `📁 Created directory ${tmpDir}`);
 }
 
+// Handle uncaught promise rejections
 process.on('unhandledRejection', (reason) => {
   console.error('\x1b[31m%s\x1b[0m', `Unhandled promise rejection: ${reason}`);
   console.error('\x1b[31m%s\x1b[0m', 'Unhandled promise rejection. Script will restart...');
   start('main.js');
 });
 
+// Handle process exit
 process.on('exit', (code) => {
   console.error(`Exited with code: ${code}`);
   console.error('Script will restart...');
